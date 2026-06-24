@@ -5,35 +5,15 @@ import TexturedSection from "./TexturedSection";
 import { catalogo, type Producto } from "@/lib/catalogo";
 
 const TABLERO: { id: number; url: string; alt: string }[] = [
-  {
-    id: 1,
-    url: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80&auto=format&fit=crop",
-    alt: "Look editorial con sombrero",
-  },
-  {
-    id: 2,
-    url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80&auto=format&fit=crop",
-    alt: "Outfit casual con mochila",
-  },
-  {
-    id: 3,
-    url: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800&q=80&auto=format&fit=crop",
-    alt: "Look con trench coat camel",
-  },
-  {
-    id: 4,
-    url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80&auto=format&fit=crop",
-    alt: "Outfit street style minimalista",
-  },
-  {
-    id: 5,
-    url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80&auto=format&fit=crop",
-    alt: "Look con suéter beige",
-  },
+  { id: 1, url: "/tablero/tablero_01.jpg", alt: "Look del tablero 1" },
+  { id: 2, url: "/tablero/tablero_02.jpg", alt: "Look del tablero 2" },
+  { id: 3, url: "/tablero/tablero_03.jpg", alt: "Look del tablero 3" },
+  { id: 4, url: "/tablero/tablero_04.jpg", alt: "Look del tablero 4" },
+  { id: 5, url: "/tablero/tablero_05.jpg", alt: "Look del tablero 5" },
   {
     id: 6,
-    url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=800&q=80&auto=format&fit=crop",
-    alt: "Look editorial blanco y negro",
+    url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80&auto=format&fit=crop",
+    alt: "Look con jogging amarillo",
   },
 ];
 

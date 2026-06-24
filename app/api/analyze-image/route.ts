@@ -32,11 +32,24 @@ function getAvailableCatalog(): Producto[] {
   });
 }
 
+// Tipos que se consideran intercambiables en el matching.
+// Una remera puede clasificarse como "camisa" o "top" según la foto,
+// así que los hacemos compatibles entre sí con menor puntaje que un match exacto.
+const TIPOS_COMPATIBLES: Record<string, string[]> = {
+  camisa: ["top"],
+  top: ["camisa"],
+};
+
+function tipoMatchScore(tipoCatalogo: string, tipoBuscado: string): number {
+  if (tipoCatalogo === tipoBuscado) return 3;
+  if (TIPOS_COMPATIBLES[tipoBuscado]?.includes(tipoCatalogo)) return 2;
+  return 0;
+}
+
 function heuristicRanking(criterios: Analisis, items: Producto[]): number[] {
   const scored = items.map((p) => {
-    let score = 0;
-    if (p.tipo === criterios.tipo) {
-      score += 3;
+    let score = tipoMatchScore(p.tipo, criterios.tipo);
+    if (score > 0) {
       if (p.color === criterios.color) score += 2;
       if (p.estampado === criterios.estampado) score += 2;
       if (p.estilo === criterios.estilo) score += 1;
@@ -68,7 +81,41 @@ function forzarFormatoJpeg(url: string): string {
   }
 }
 
+function mimeFromExt(ext: string): string {
+  switch (ext.toLowerCase()) {
+    case ".png":
+      return "image/png";
+    case ".webp":
+      return "image/webp";
+    case ".gif":
+      return "image/gif";
+    default:
+      return "image/jpeg";
+  }
+}
+
+async function readLocalAsBase64(publicPath: string): Promise<string | null> {
+  try {
+    const safePath = publicPath.split("?")[0].split("#")[0];
+    const decoded = decodeURIComponent(safePath);
+    const fsPath = path.join(process.cwd(), "public", decoded);
+    const buf = fs.readFileSync(fsPath);
+    const ext = path.extname(fsPath);
+    const contentType = mimeFromExt(ext);
+    console.log(
+      `[analyze-image] imagen local leída: ${buf.length} bytes, ${contentType}`
+    );
+    return `data:${contentType};base64,${buf.toString("base64")}`;
+  } catch (err) {
+    console.error("[analyze-image] lectura local falló:", err);
+    return null;
+  }
+}
+
 async function fetchAsBase64(url: string): Promise<string | null> {
+  if (url.startsWith("/")) {
+    return readLocalAsBase64(url);
+  }
   const normalizada = forzarFormatoJpeg(url);
   try {
     const res = await fetch(normalizada, {
