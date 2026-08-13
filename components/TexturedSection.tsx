@@ -1,6 +1,14 @@
 import type { CSSProperties, ReactNode } from "react";
 
-type Texture = "linen" | "stone" | "kraft" | "limestone";
+type Texture =
+  | "linen"
+  | "stone"
+  | "kraft"
+  | "limestone"
+  | "cuero-oscuro"
+  | "yute-claro"
+  | "yute-opaco"
+  | "madera";
 type OverlayColor =
   | "cuero-dark"
   | "cuero-light"
@@ -14,6 +22,10 @@ const TEXTURE_FILES: Record<Texture, string> = {
   stone: "/textures/stone.jpg",
   kraft: "/textures/kraft-paper.jpg",
   limestone: "/textures/limestone.jpg",
+  "cuero-oscuro": "/textures/fondocuerooscuro.jpg",
+  "yute-claro": "/textures/yuteclaro.jpg",
+  "yute-opaco": "/textures/yuteopaco.jpg",
+  madera: "/textures/madera.jpg",
 };
 
 const OVERLAY_HEX: Record<OverlayColor, string> = {
@@ -30,9 +42,15 @@ const DEFAULT_OVERLAY: Record<Texture, OverlayColor> = {
   stone: "piedra",
   kraft: "hueso",
   limestone: "hueso",
+  "cuero-oscuro": "carbon",
+  "yute-claro": "hueso",
+  "yute-opaco": "hueso",
+  madera: "carbon",
 };
 
 type Props = {
+  id?: string;
+  ariaLabel?: string;
   texture: Texture;
   overlay?: OverlayColor;
   overlayOpacity?: number;
@@ -41,6 +59,8 @@ type Props = {
 };
 
 export default function TexturedSection({
+  id,
+  ariaLabel,
   texture,
   overlay,
   overlayOpacity = 0.88,
@@ -62,7 +82,12 @@ export default function TexturedSection({
   };
 
   return (
-    <section className={`relative isolate ${className}`} style={style}>
+    <section
+      id={id}
+      aria-label={ariaLabel}
+      className={`relative isolate ${className}`}
+      style={style}
+    >
       <div className="absolute inset-0 -z-10" style={overlayStyle} />
       {children}
     </section>

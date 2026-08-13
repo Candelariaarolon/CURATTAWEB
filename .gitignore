@@ -26,9 +26,20 @@ yarn-error.log*
 .env*.local
 .env
 
+# tokens de Meli que rotan (ver lib/meli-auth.ts)
+.meli-token.json
+
+# tokens de tiendas Tiendanube conectadas (ver lib/tiendanube-store.ts)
+/data/tiendanube-tokens.json
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma / sqlite
+/prisma/dev.db
+/prisma/dev.db-journal
+.env*

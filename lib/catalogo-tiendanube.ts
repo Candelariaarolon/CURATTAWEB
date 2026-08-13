@@ -1,0 +1,163 @@
+// ARCHIVO GENERADO AUTOMÁTICAMENTE por scripts/generar-catalogo-tiendanube.ts
+// Para regenerar: npm run generar-catalogo-tiendanube
+// No editar manualmente — los cambios se sobreescriben al regenerar.
+
+export interface ProductoTiendanube {
+  id: number;
+  nombre: string;
+  precio: number;
+  imagen: string;
+  link: string;
+  tipo_prenda: string;
+  silueta_corte: string;
+  patron: string;
+  familia_color: string;
+  textura_tela: string;
+  formalidad_estilo: string;
+}
+
+export const catalogoTiendanube: ProductoTiendanube[] = [
+  {
+    id: 358161924,
+    nombre: "Remera 1",
+    precio: 100,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/4-e9ad09fb8fdc1bd40f17852804389058-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/remera-1-cegpn/",
+    tipo_prenda: "top",
+    silueta_corte: "fitted",
+    patron: "floral",
+    familia_color: "tierra",
+    textura_tela: "seda_satinado",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 358162194,
+    nombre: "Remera 2",
+    precio: 200,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/5-43be0b67d2ba367db417852805432777-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/remera-2-7njgl/",
+    tipo_prenda: "top",
+    silueta_corte: "fitted",
+    patron: "liso",
+    familia_color: "tierra",
+    textura_tela: "gasa",
+    formalidad_estilo: "casual",
+  },
+  {
+    id: 358162246,
+    nombre: "Remera 3",
+    precio: 300,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/6-284b70729ced6f4a8e17852805750513-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/remera-3-19f4m/",
+    tipo_prenda: "top",
+    silueta_corte: "fitted",
+    patron: "liso",
+    familia_color: "neutros_oscuros",
+    textura_tela: "seda_satinado",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 358162292,
+    nombre: "Remera 4",
+    precio: 400,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/7-eced27ab189525413817852805967870-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/remera-4-ekg0q/",
+    tipo_prenda: "top",
+    silueta_corte: "fitted",
+    patron: "liso",
+    familia_color: "neutros_oscuros",
+    textura_tela: "gasa",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 358162393,
+    nombre: "Jean 1",
+    precio: 100,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/9-1eec9bab0671d14f0617852806491048-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/jean-1-151t6/",
+    tipo_prenda: "pantalon",
+    silueta_corte: "wide leg",
+    patron: "liso",
+    familia_color: "neutros_oscuros",
+    textura_tela: "denim",
+    formalidad_estilo: "urbano_desenfadado",
+  },
+  {
+    id: 358162418,
+    nombre: "Jean 2",
+    precio: 100,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/10-caf79a924e29ee578c17852806690123-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/jean-2-161nu/",
+    tipo_prenda: "pantalon",
+    silueta_corte: "wide leg",
+    patron: "liso",
+    familia_color: "neutros_claros",
+    textura_tela: "denim",
+    formalidad_estilo: "casual",
+  },
+  {
+    id: 358162464,
+    nombre: "Vestido",
+    precio: 100,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/farda-6d7adab0e6b62fdbc617852806893552-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/vestido-15jn7/",
+    tipo_prenda: "vestido",
+    silueta_corte: "fitted",
+    patron: "liso",
+    familia_color: "metalizados",
+    textura_tela: "seda_satinado",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 359492629,
+    nombre: "vestido flora",
+    precio: 3000,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/12-ded391fcb9df54a39817859614385056-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/vestido-flora-1h6z3/",
+    tipo_prenda: "vestido",
+    silueta_corte: "fitted",
+    patron: "floral",
+    familia_color: "vivos_saturados",
+    textura_tela: "seda_satinado",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 359492711,
+    nombre: "vestido clara",
+    precio: 2500,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/13-bb1e357f6ff3ee4bc017859614666116-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/vestido-clara-wp874/",
+    tipo_prenda: "vestido",
+    silueta_corte: "acampanado",
+    patron: "floral",
+    familia_color: "neutros_claros",
+    textura_tela: "seda_satinado",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 359492767,
+    nombre: "vestido flow",
+    precio: 4500,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/graduation-formal-dress-floral-51c541f35321e6c95417859614875032-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/vestido-flow-16767/",
+    tipo_prenda: "vestido",
+    silueta_corte: "acampanado",
+    patron: "floral",
+    familia_color: "neutros_claros",
+    textura_tela: "gasa",
+    formalidad_estilo: "elegante_noche",
+  },
+  {
+    id: 359493084,
+    nombre: "top deportivo",
+    precio: 4000,
+    imagen: "https://dcdn-us.mitiendanube.com/stores/008/021/225/products/16-0093604204994ab24117859615889135-1024-1024.jpg",
+    link: "https://cande58.mitiendanube.com/productos/top-deportivo-xmav6/",
+    tipo_prenda: "top",
+    silueta_corte: "fitted",
+    patron: "liso",
+    familia_color: "neutros_oscuros",
+    textura_tela: "jersey",
+    formalidad_estilo: "deportivo",
+  },
+];

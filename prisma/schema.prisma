@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  passwordHash   String
+  emailVerified  Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  pinterestToken PinterestToken?
+  colecciones    Coleccion[]
+
+  verificationToken       String?   @unique
+  verificationTokenExpiry DateTime?
+
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+}
+
+model Coleccion {
+  id        String          @id @default(cuid())
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nombre    String
+  createdAt DateTime        @default(now())
+  items     ColeccionItem[]
+}
+
+model ColeccionItem {
+  id          String    @id @default(cuid())
+  coleccionId String
+  coleccion   Coleccion @relation(fields: [coleccionId], references: [id], onDelete: Cascade)
+  productoId  String
+  nombre      String
+  marca       String
+  precio      Int
+  imagen      String
+  link        String
+  createdAt   DateTime  @default(now())
+
+  @@unique([coleccionId, productoId])
+}
+
+model PinterestToken {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Identidad de la cuenta de Pinterest en sí (username de /v5/user_account),
+  // no del usuario de Curatta — garantiza el vínculo 1 a 1: una cuenta de
+  // Pinterest no puede quedar conectada a dos cuentas de Curatta distintas.
+  // Nullable porque las conexiones hechas antes de este campo no lo tienen
+  // todavía (se completa recién cuando reconectan).
+  pinterestUserId  String?  @unique
+  accessToken      String
+  refreshToken     String?
+  scope            String?
+  expiresAt        DateTime
+  // JSON-encoded array de board IDs elegidos por el usuario. Null = todavía
+  // no eligió (primera vez conectando), hay que mostrarle el selector.
+  selectedBoardIds String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model TiendanubeToken {
+  id          String   @id @default(cuid())
+  storeId     String   @unique
+  accessToken String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

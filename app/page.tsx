@@ -1,19 +1,12 @@
-import Hero from "@/components/Hero";
-import Demo from "@/components/Demo";
-import PrivacyPolicy from "@/components/PrivacyPolicy";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import LandingPublica from "@/components/landing-publica/LandingPublica";
 
-export default function Page() {
-  return (
-    <main id="top">
-      <Hero />
+export default async function Page() {
+  const session = await auth();
+  if (session) {
+    redirect("/explorar");
+  }
 
-      <section id="demo" aria-label="Demo">
-        <Demo />
-      </section>
-
-      <section id="privacidad" aria-label="Política de privacidad">
-        <PrivacyPolicy />
-      </section>
-    </main>
-  );
+  return <LandingPublica />;
 }

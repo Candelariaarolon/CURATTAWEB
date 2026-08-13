@@ -1,188 +1,48 @@
 import { NextResponse } from "next/server";
-import fs from "node:fs";
-import path from "node:path";
-import { catalogo, type Producto } from "@/lib/catalogo";
-import { analyzeImageFromDataUrl, type Analisis } from "@/lib/azure-openai";
+import { matchProductos } from "@/lib/matching-tiendanube";
 
 export const runtime = "nodejs";
 
-const PRODUCTOS_DIR = path.join(process.cwd(), "public", "productos");
-const FORMATOS_VALIDOS = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-
-const FALLBACK_ANALISIS: Analisis = {
-  tipo: "blazer",
-  color: "beige",
-  estampado: "liso",
-  estilo: "casual",
-};
-
-function getAvailableImageFiles(): Set<string> {
-  try {
-    return new Set(fs.readdirSync(PRODUCTOS_DIR));
-  } catch {
-    return new Set();
-  }
-}
-
-function getAvailableCatalog(): Producto[] {
-  const available = getAvailableImageFiles();
-  return catalogo.filter((p) => {
-    const fname = p.imagen.split("/").pop() ?? "";
-    return available.has(fname);
-  });
-}
-
-// Tipos que se consideran intercambiables en el matching.
-// Una remera puede clasificarse como "camisa" o "top" según la foto,
-// así que los hacemos compatibles entre sí con menor puntaje que un match exacto.
-const TIPOS_COMPATIBLES: Record<string, string[]> = {
-  camisa: ["top"],
-  top: ["camisa"],
-};
-
-function tipoMatchScore(tipoCatalogo: string, tipoBuscado: string): number {
-  if (tipoCatalogo === tipoBuscado) return 3;
-  if (TIPOS_COMPATIBLES[tipoBuscado]?.includes(tipoCatalogo)) return 2;
-  return 0;
-}
-
-function heuristicRanking(criterios: Analisis, items: Producto[]): number[] {
-  const scored = items.map((p) => {
-    let score = tipoMatchScore(p.tipo, criterios.tipo);
-    if (score > 0) {
-      if (p.color === criterios.color) score += 2;
-      if (p.estampado === criterios.estampado) score += 2;
-      if (p.estilo === criterios.estilo) score += 1;
-    }
-    return { id: p.id, score };
-  });
-  return scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3)
-    .map((s) => s.id);
-}
-
-function buildResponse(analisis: Analisis) {
-  const items = getAvailableCatalog();
-  return { ...analisis, ranked_ids: heuristicRanking(analisis, items) };
-}
-
-function forzarFormatoJpeg(url: string): string {
-  try {
-    const u = new URL(url);
-    if (u.hostname.endsWith("unsplash.com")) {
-      u.searchParams.set("fm", "jpg");
-      u.searchParams.delete("auto");
-    }
-    return u.toString();
-  } catch {
-    return url;
-  }
-}
-
-function mimeFromExt(ext: string): string {
-  switch (ext.toLowerCase()) {
-    case ".png":
-      return "image/png";
-    case ".webp":
-      return "image/webp";
-    case ".gif":
-      return "image/gif";
-    default:
-      return "image/jpeg";
-  }
-}
-
-async function readLocalAsBase64(publicPath: string): Promise<string | null> {
-  try {
-    const safePath = publicPath.split("?")[0].split("#")[0];
-    const decoded = decodeURIComponent(safePath);
-    const fsPath = path.join(process.cwd(), "public", decoded);
-    const buf = fs.readFileSync(fsPath);
-    const ext = path.extname(fsPath);
-    const contentType = mimeFromExt(ext);
-    console.log(
-      `[analyze-image] imagen local leída: ${buf.length} bytes, ${contentType}`
-    );
-    return `data:${contentType};base64,${buf.toString("base64")}`;
-  } catch (err) {
-    console.error("[analyze-image] lectura local falló:", err);
-    return null;
-  }
-}
-
-async function fetchAsBase64(url: string): Promise<string | null> {
-  if (url.startsWith("/")) {
-    return readLocalAsBase64(url);
-  }
-  const normalizada = forzarFormatoJpeg(url);
-  try {
-    const res = await fetch(normalizada, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-        Accept: "image/jpeg,image/png,image/webp,image/gif",
-      },
-    });
-    if (!res.ok) {
-      console.error(
-        "[analyze-image] fetch imagen falló:",
-        res.status,
-        res.statusText,
-        normalizada
-      );
-      return null;
-    }
-    const buf = Buffer.from(await res.arrayBuffer());
-    const contentType = (res.headers.get("content-type") || "image/jpeg")
-      .split(";")[0]
-      .trim()
-      .toLowerCase();
-
-    if (!FORMATOS_VALIDOS.includes(contentType)) {
-      console.error(
-        `[analyze-image] formato no soportado: ${contentType}`
-      );
-      return null;
-    }
-
-    console.log(
-      `[analyze-image] imagen descargada: ${buf.length} bytes, ${contentType}`
-    );
-    return `data:${contentType};base64,${buf.toString("base64")}`;
-  } catch (err) {
-    console.error("[analyze-image] fetch imagen excepción:", err);
-    return null;
-  }
-}
-
 export async function POST(req: Request) {
   try {
-    const { imageUrl } = (await req.json()) as { imageUrl?: string };
+    const body = (await req.json()) as { imageUrl?: string };
+    const { imageUrl } = body;
+
     if (!imageUrl || typeof imageUrl !== "string") {
-      return NextResponse.json(buildResponse(FALLBACK_ANALISIS));
+      return NextResponse.json({
+        analisis: null,
+        productos: [],
+        mensaje: "No se recibió ninguna imagen para analizar",
+      });
     }
 
     console.log("[analyze-image] ──── nueva consulta ────");
     console.log("[analyze-image] URL recibida:", imageUrl);
 
-    const dataUrl = await fetchAsBase64(imageUrl);
-    if (!dataUrl) {
-      console.error("[analyze-image] No se pudo descargar la imagen");
-      return NextResponse.json(buildResponse(FALLBACK_ANALISIS));
-    }
+    const resultado = await matchProductos([imageUrl]);
+    const analisis = resultado.analisis[0] ?? null;
+    const productos = resultado.matches
+      .flatMap((g) => g.productos)
+      .sort((a, b) => b.score - a.score);
 
-    const analisis = await analyzeImageFromDataUrl(dataUrl);
     console.log(
-      `[analyze-image] análisis: ${analisis.tipo} · ${analisis.color} · ${analisis.estampado} · ${analisis.estilo}`
+      "[analyze-image] análisis:",
+      analisis,
+      "— productos encontrados:",
+      productos.length
     );
 
-    const out = buildResponse(analisis);
-    console.log("[analyze-image] ranked_ids:", out.ranked_ids);
-    return NextResponse.json(out);
+    return NextResponse.json({
+      analisis,
+      productos,
+      mensaje: resultado.mensaje,
+    });
   } catch (err) {
     console.error("[analyze-image] Error:", err);
-    return NextResponse.json(buildResponse(FALLBACK_ANALISIS));
+    return NextResponse.json({
+      analisis: null,
+      productos: [],
+      mensaje: "Ocurrió un error analizando la imagen",
+    });
   }
 }
