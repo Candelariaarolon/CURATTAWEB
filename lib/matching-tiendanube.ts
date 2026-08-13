@@ -76,8 +76,24 @@ function scoreContra(producto: ProductoTiendanube, referencia: AnalisisModa): nu
 // Si el input tiene varias imágenes de la misma categoría (ej. un tablero
 // con dos vestidos distintos), un producto es buen match si se parece a
 // CUALQUIERA de esas referencias, no a todas a la vez.
+//
+// "deportivo" es un caso aparte dentro de formalidad_estilo: no es un grado
+// más de formalidad (como casual vs. elegante_noche), es una categoría de
+// uso distinta que nunca debería sustituir a un top/pantalón de calle ni
+// viceversa. Con el peso normal (3/12) no alcanza para descartar del todo
+// una musculosa deportiva de un tablero de tops para salir — con el resto
+// de atributos parecidos (corte fitted, patrón liso, color neutro) sigue
+// pasando el umbral relajado (30%) y termina recomendándose igual
+// (confirmado: "top deportivo" apareciendo en un tablero de tops de calle).
+// Por eso acá "deportivo" corta directo: un producto deportivo solo compite
+// contra referencias deportivas, y un producto no deportivo solo contra
+// referencias no deportivas.
 function mejorScore(producto: ProductoTiendanube, referencias: AnalisisModa[]): number {
-  return Math.max(...referencias.map((r) => scoreContra(producto, r)));
+  const compatibles = referencias.filter(
+    (r) => (r.formalidad_estilo === "deportivo") === (producto.formalidad_estilo === "deportivo")
+  );
+  if (compatibles.length === 0) return 0;
+  return Math.max(...compatibles.map((r) => scoreContra(producto, r)));
 }
 
 // Analizar cada imagen es una descarga + una llamada a Azure OpenAI Vision
